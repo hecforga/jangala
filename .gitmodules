@@ -1,0 +1,3 @@
+[submodule "graphql_server"]
+	path = graphql_server
+	url = https://git.heroku.com/jangala.git
