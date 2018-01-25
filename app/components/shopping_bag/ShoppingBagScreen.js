@@ -3,6 +3,10 @@ import { Platform, StyleSheet, Text, View } from 'react-native';
 import { Constants } from 'expo';
 
 class ShoppingBagScreen extends Component {
+  static navigationOptions = {
+    title: 'Bolsa'
+  };
+
   render() {
     const { navigation } = this.props;
 
@@ -13,10 +17,6 @@ class ShoppingBagScreen extends Component {
     );
   }
 }
-
-ShoppingBagScreen.navigationOptions = ({ navigation }) => ({
-  title: 'Bolsa'
-});
 
 const styles = StyleSheet.create({
   container: {

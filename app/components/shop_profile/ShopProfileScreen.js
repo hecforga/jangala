@@ -5,6 +5,10 @@ import { Constants } from 'expo';
 import ShopProfileContainer from './ShopProfileContainer.js';
 
 class ShopProfileScreen extends Component {
+  static navigationOptions = {
+    header: null
+  };
+
   render() {
     const { navigation } = this.props;
     const shopId = navigation.state.params.shopId;
@@ -16,10 +20,6 @@ class ShopProfileScreen extends Component {
     );
   }
 }
-
-ShopProfileScreen.navigationOptions = {
-  header: null
-};
 
 const styles = StyleSheet.create({
   container: {

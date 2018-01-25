@@ -5,6 +5,10 @@ import { Constants } from 'expo';
 import CatalogueContainer from './CatalogueContainer.js';
 
 class CatalogueScreen extends Component {
+  static navigationOptions = {
+    header: null
+  };
+
   render() {
     const { navigation } = this.props;
 
@@ -15,10 +19,6 @@ class CatalogueScreen extends Component {
     );
   }
 }
-
-CatalogueScreen.navigationOptions = {
-  header: null
-};
 
 const styles = StyleSheet.create({
   container: {

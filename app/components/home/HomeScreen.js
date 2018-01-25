@@ -3,6 +3,10 @@ import { Platform, StyleSheet, Text, View } from 'react-native';
 import { Constants } from 'expo';
 
 class HomeScreen extends Component {
+  static navigationOptions = {
+    header: null
+  };
+
   render() {
     const { navigation } = this.props;
 
@@ -13,10 +17,6 @@ class HomeScreen extends Component {
     );
   }
 }
-
-HomeScreen.navigationOptions = {
-  header: null
-};
 
 const styles = StyleSheet.create({
   container: {
