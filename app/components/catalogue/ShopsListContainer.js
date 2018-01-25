@@ -7,9 +7,9 @@ import ShopsList from './ShopsList.js';
 
 class ShopsListContainer extends Component {
   render() {
-    const { visibleShopsQuery } = this.props;
+    const { shopsQuery } = this.props;
 
-    if (visibleShopsQuery.loading) {
+    if (shopsQuery.loading) {
       return (
         <View style={styles.centeredContainer}>
           <ActivityIndicator size='large' />
@@ -19,7 +19,7 @@ class ShopsListContainer extends Component {
 
     return (
       <View style={styles.container}>
-        <ShopsList shops={visibleShopsQuery.visibleShops} onShopButtonPress={this.onShopButtonPress} />
+        <ShopsList shops={shopsQuery.shops} onShopButtonPress={this.onShopButtonPress} />
       </View>
     );
   }
@@ -44,15 +44,15 @@ const styles = StyleSheet.create({
   }
 });
 
-const VISIBLE_SHOPS_QUERY = gql`
-  query VisibleShopsQuery {
-    visibleShops {
+const SHOPS_QUERY = gql`
+  query ShopsQuery {
+    shops {
       id,
       name
     }
   }
 `;
 
-export default graphql(VISIBLE_SHOPS_QUERY, {
-  name: 'visibleShopsQuery'
+export default graphql(SHOPS_QUERY, {
+  name: 'shopsQuery'
 })(ShopsListContainer);
