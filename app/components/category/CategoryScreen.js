@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
-import { Platform, StyleSheet, View } from 'react-native';
+import { Platform, StyleSheet, Text, View } from 'react-native';
 import { Constants } from 'expo';
 
-import ShopProfileContainer from './ShopProfileContainer.js';
+import CategoryContainer from './CategoryContainer.js';
 
-class ShopProfileScreen extends Component {
+class CategoryScreen extends Component {
   static navigationOptions = ({ navigation }) => ({
     title: navigation.state.params.title,
   });
@@ -14,7 +14,7 @@ class ShopProfileScreen extends Component {
 
     return (
       <View style={styles.container}>
-        <ShopProfileContainer shopId={navigation.state.params.shopId} />
+        <CategoryContainer categoryId={navigation.state.params.categoryId} />
       </View>
     );
   }
@@ -26,4 +26,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default ShopProfileScreen;
+export default CategoryScreen;

@@ -1,27 +1,63 @@
 import React, { PropTypes, Component } from 'react';
 import { BackHandler, Platform, StyleSheet } from 'react-native';
 import { connect } from 'react-redux';
-import { addNavigationHelpers, NavigationActions, StackNavigator, TabNavigator, TabBarBottom } from 'react-navigation';
+import { addNavigationHelpers, NavigationActions, StackNavigator, TabNavigator, TabBarTop, TabBarBottom } from 'react-navigation';
 import { FontAwesome } from '@expo/vector-icons';
+import { Constants } from 'expo';
 
 import tabs, { getInitialTabName, getTabNameForCatalogueScreen, getTabNameForHomeScreen, getTabNameForShoppingBagScreen } from '../utilities/tabsInfo.js';
 
-import CatalogueScreen from '../components/catalogue/CatalogueScreen.js';
+import ShopsListScreen from '../components/catalogue/ShopsListScreen.js';
+import CategoriesListScreen from '../components/catalogue/CategoriesListScreen.js';
 import HomeScreen from '../components/home/HomeScreen.js';
 import ShoppingBagScreen from '../components/shopping_bag/ShoppingBagScreen.js';
 import ShopProfileScreen from '../components/shop_profile/ShopProfileScreen.js';
+import CategoryScreen from '../components/category/CategoryScreen.js';
+
+const CatalogueTabs = TabNavigator({
+  ShopsList: {
+    screen: ShopsListScreen,
+  },
+  CategoriesList: {
+    screen: CategoriesListScreen,
+  },
+}, {
+  tabBarComponent: TabBarTop,
+  tabBarPosition: 'top',
+  backBehavior: 'none',
+  tabBarOptions: {
+    style: {
+      backgroundColor: 'white',
+      marginTop: Platform.OS === 'android' ? Constants.statusBarHeight : 0,
+    },
+    tabStyle: {
+      paddingTop: 0, // default padding: 8 (https://github.com/react-native-community/react-native-tab-view/blob/master/src/TabBar.js)
+    },
+    labelStyle: {
+      fontWeight: '500',
+      marginTop: 0, // default margin: 8 (https://github.com/react-native-community/react-native-tab-view/blob/master/src/TabBar.js)
+    },
+    activeTintColor: 'black',
+    inactiveTintColor: 'grey',
+    indicatorStyle: {
+      backgroundColor: '#6683a4',
+    },
+    pressColor: 'grey',
+  },
+});
 
 const CatalogueNavigator = StackNavigator({
-  Catalogue: { screen: CatalogueScreen },
-  ShopProfile: { screen: ShopProfileScreen }
+  Catalogue: { screen: CatalogueTabs },
+  ShopProfile: { screen: ShopProfileScreen },
+  Category: { screen: CategoryScreen },
 }, {
   initialRouteName: 'Catalogue',
   navigationOptions: {
-    headerBackTitle: null
+    headerBackTitle: null,
   },
   cardStyle:{
-    backgroundColor:'white'
-  }
+    backgroundColor:'white',
+  },
 });
 
 const HomeNavigator = StackNavigator({
@@ -107,7 +143,6 @@ export const AppNavigator = TabNavigator({
   swipeEnabled: false,
   initialRouteName: getInitialTabName(),
   order: tabs,
-  lazy: true,
   tabBarOptions: {
     activeTintColor: '#f0742f',
     inactiveTintColor: '#9e9e9e',

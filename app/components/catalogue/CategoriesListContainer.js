@@ -3,13 +3,13 @@ import { StyleSheet, View, ActivityIndicator } from 'react-native';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 
-import ShopsList from './ShopsList.js';
+import CategoriesList from './CategoriesList.js';
 
-class ShopsListContainer extends Component {
+class CategoriesListContainer extends Component {
   render() {
-    const { shopsQuery } = this.props;
+    const { categoriesQuery } = this.props;
 
-    if (shopsQuery.loading) {
+    if (categoriesQuery.loading) {
       return (
         <View style={styles.centeredContainer}>
           <ActivityIndicator size='large' />
@@ -19,17 +19,17 @@ class ShopsListContainer extends Component {
 
     return (
       <View style={styles.container}>
-        <ShopsList shops={shopsQuery.shops} onShopButtonPress={this.onShopButtonPress} />
+        <CategoriesList categories={categoriesQuery.categories} onCategoryButtonPress={this.onCategoryButtonPress} />
       </View>
     );
   }
 
-  onShopButtonPress = (shopId, shopName) => {
+  onCategoryButtonPress = (categoryId, categoryName) => {
     const { navigation } = this.props;
 
-    navigation.navigate('ShopProfile', {
-      shopId,
-      title: shopName,
+    navigation.navigate('Category', {
+      categoryId,
+      title: categoryName,
     });
   }
 }
@@ -45,16 +45,15 @@ const styles = StyleSheet.create({
   }
 });
 
-const SHOPS_QUERY = gql`
-  query ShopsQuery {
-    shops {
+const CATEGORIES_QUERY = gql`
+  query CategoriesQuery {
+    categories {
       id,
-      name,
-      logoUrl
+      name
     }
   }
 `;
 
-export default graphql(SHOPS_QUERY, {
-  name: 'shopsQuery'
-})(ShopsListContainer);
+export default graphql(CATEGORIES_QUERY, {
+  name: 'categoriesQuery'
+})(CategoriesListContainer);
