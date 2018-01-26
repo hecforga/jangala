@@ -23,7 +23,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: Platform.OS === 'android' ? Constants.statusBarHeight : null
+    marginTop: Platform.OS === 'android' ? Constants.statusBarHeight : 0,
   }
 });
 

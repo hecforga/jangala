@@ -16,6 +16,8 @@ class MyButton extends Component {
       iconName,
       iconColor,
       disabled,
+      activeOpacity,
+      underlayColor,
       noBackground
     } = this.props;
 
@@ -53,20 +55,38 @@ class MyButton extends Component {
       IconComponent = icons[iconFamily];
     }
 
+    let innerView = (
+      <View style={buttonStyles}>
+        {iconName ?
+          <IconComponent name={iconName} color={iconColor || 'white'} style={iconStyles} />
+          :
+          <Text style={textStyles} disabled={disabled}>{title.toUpperCase()}</Text>
+        }
+      </View>
+    );
+
     return (
-      <Touchable
-        disabled={disabled}
-        onPress={onPress}
-        style={containerStyle}
-      >
-        <View style={buttonStyles}>
-          {iconName ?
-            <IconComponent name={iconName} color={iconColor || 'white'} style={iconStyles} />
-            :
-            <Text style={textStyles} disabled={disabled}>{title.toUpperCase()}</Text>
-          }
-        </View>
-      </Touchable>
+      <View>
+        {touchableType && touchableType === 'highlight' ?
+          <TouchableHighlight
+            underlayColor={underlayColor}
+            disabled={disabled}
+            onPress={onPress}
+            style={containerStyle}
+          >
+            {innerView}
+          </TouchableHighlight>
+          :
+          <TouchableOpacity
+            activeOpacity={activeOpacity}
+            disabled={disabled}
+            onPress={onPress}
+            style={containerStyle}
+          >
+            {innerView}
+          </TouchableOpacity>
+        }
+      </View>
     );
   }
 }

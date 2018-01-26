@@ -3,7 +3,12 @@ import { StyleSheet, View } from 'react-native';
 
 import ShopsListContainer from './ShopsListContainer.js';
 
-class CatalogueContainer extends Component {
+class ShopsListScreen extends Component {
+  static navigationOptions = {
+    header: null,
+    tabBarLabel: 'Tiendas',
+  };
+
   render() {
     const { navigation } = this.props;
 
@@ -17,8 +22,8 @@ class CatalogueContainer extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1
+    flex: 1,
   }
 });
 
-export default CatalogueContainer;
+export default ShopsListScreen;

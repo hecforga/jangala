@@ -4,7 +4,7 @@ import { Constants } from 'expo';
 
 class ShoppingBagScreen extends Component {
   static navigationOptions = {
-    title: 'Bolsa'
+    title: 'Bolsa',
   };
 
   render() {
@@ -23,7 +23,6 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: Platform.OS === 'android' ? Constants.statusBarHeight : null
   }
 });
 
