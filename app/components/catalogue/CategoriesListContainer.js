@@ -17,6 +17,8 @@ class CategoriesListContainer extends Component {
       );
     }
 
+    // Add error handling (wait until this issue is solved: https://github.com/apollographql/apollo-client/issues/2513)
+
     return (
       <View style={styles.container}>
         <CategoriesList categories={categoriesQuery.categories} onCategoryButtonPress={this.onCategoryButtonPress} />
@@ -31,7 +33,7 @@ class CategoriesListContainer extends Component {
       categoryId,
       title: categoryName,
     });
-  }
+  };
 }
 
 const styles = StyleSheet.create({

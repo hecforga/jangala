@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import { Platform, StyleSheet, Text, View } from 'react-native';
-import { Constants } from 'expo';
+import { StyleSheet, Text, View } from 'react-native';
 
 class ShoppingBagScreen extends Component {
   static navigationOptions = {

@@ -13,6 +13,8 @@ import HomeScreen from '../components/home/HomeScreen.js';
 import ShoppingBagScreen from '../components/shopping_bag/ShoppingBagScreen.js';
 import ShopProfileScreen from '../components/shop_profile/ShopProfileScreen.js';
 import CategoryScreen from '../components/category/CategoryScreen.js';
+import FiltersScreen from '../components/filters/FiltersScreen.js';
+import ProductDetailScreen from '../components/product_detail/ProductDetailScreen.js';
 
 const CatalogueTabs = TabNavigator({
   ShopsList: {
@@ -50,6 +52,8 @@ const CatalogueNavigator = StackNavigator({
   Catalogue: { screen: CatalogueTabs },
   ShopProfile: { screen: ShopProfileScreen },
   Category: { screen: CategoryScreen },
+  Filters: { screen: FiltersScreen },
+  ProductDetail: { screen: ProductDetailScreen },
 }, {
   initialRouteName: 'Catalogue',
   navigationOptions: {

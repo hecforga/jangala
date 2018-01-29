@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import { Platform, StyleSheet, Text, View } from 'react-native';
-import { Constants } from 'expo';
+import { StyleSheet, View } from 'react-native';
 
+import FiltersProvider from '../filters/FiltersProvider.js';
 import CategoryContainer from './CategoryContainer.js';
 
 class CategoryScreen extends Component {
@@ -14,7 +14,9 @@ class CategoryScreen extends Component {
 
     return (
       <View style={styles.container}>
-        <CategoryContainer categoryId={navigation.state.params.categoryId} />
+        <FiltersProvider whichFilters={['shops']}>
+          <CategoryContainer navigation={navigation} categoryId={navigation.state.params.categoryId} />
+        </FiltersProvider>
       </View>
     );
   }
