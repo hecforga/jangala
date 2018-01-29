@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import { Platform, StyleSheet, View } from 'react-native';
-import { Constants } from 'expo';
+import { StyleSheet, View } from 'react-native';
 
 import ShopProfileContainer from './ShopProfileContainer.js';
 

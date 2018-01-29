@@ -1,0 +1,1 @@
+export const getPriceLabel = (product) => product.price.toFixed(2) + ' €';

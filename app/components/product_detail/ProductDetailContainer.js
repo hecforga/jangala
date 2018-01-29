@@ -3,11 +3,11 @@ import { StyleSheet, View, ActivityIndicator, Text } from 'react-native';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 
-class ShopProfileContainer extends Component {
+class ProductDetailContainer extends Component {
   render() {
-    const { shopQuery } = this.props;
+    const { productQuery } = this.props;
 
-    if (shopQuery.loading) {
+    if (productQuery.loading) {
       return (
         <View style={styles.centeredContainer}>
           <ActivityIndicator size='large' />
@@ -19,7 +19,7 @@ class ShopProfileContainer extends Component {
 
     return (
       <View style={styles.container}>
-        <Text>{shopQuery.shop.name}</Text>
+        <Text>{productQuery.product.title}</Text>
       </View>
     );
   }
@@ -36,20 +36,16 @@ const styles = StyleSheet.create({
   }
 });
 
-const SHOP_QUERY = gql`
-  query ShopQuery($id: ID!) {
-    shop(id: $id) {
+const PRODUCT_QUERY = gql`
+  query ProductQuery($id: ID!) {
+    product(id: $id) {
       id,
-      name,
-      slogan,
-      logoUrl,
-      coverImageUrl,
-      country
+      title
     }
   }
 `;
 
-export default graphql(SHOP_QUERY, {
-  name: 'shopQuery',
-  options: ({ shopId }) => ({ variables: { id: shopId } }),
-})(ShopProfileContainer);
+export default graphql(PRODUCT_QUERY, {
+  name: 'productQuery',
+  options: ({ productId }) => ({ variables: { id: productId } }),
+})(ProductDetailContainer);
