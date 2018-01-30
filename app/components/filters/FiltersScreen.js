@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { StyleSheet, View } from 'react-native';
 
+import FiltersProvider from './FiltersProvider.js';
 import FiltersContainer from './FiltersContainer.js';
 
 class FiltersScreen extends Component {
@@ -14,12 +15,13 @@ class FiltersScreen extends Component {
 
     return (
       <View style={styles.container}>
-        <FiltersContainer
-          navigation={navigation}
-          appliedFilters={navigation.state.params.appliedFilters}
-          setAppliedFilters={navigation.state.params.setAppliedFilters}
-          options={navigation.state.params.options}
-        />
+        <FiltersProvider copyFiltersFrom={navigation.state.params.appliedFilters}>
+          <FiltersContainer
+            navigation={navigation}
+            setAppliedFilters={navigation.state.params.setAppliedFilters}
+            options={navigation.state.params.options}
+          />
+        </FiltersProvider>
       </View>
     );
   }

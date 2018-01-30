@@ -1,10 +1,17 @@
 const filtersInitialState = {
+  price: {
+    min: null,
+    max: null,
+  },
   shops: [],
   categories: [],
 };
 
-export const getFiltersInitialState = (whichFilters) => {
-  return Object.assign({}, ...whichFilters.map(filterName => ({[filterName]: filtersInitialState[filterName]}))); // like lodash _.pick
+export const getDefaultFilters = (whichFilters) => {
+  // like lodash _.pick
+  return Object.assign({}, ...whichFilters.map(filterName => ({
+    [filterName]: filtersInitialState[filterName]
+  })));
 };
 
 export const areFiltersCleared = (filters) => {
@@ -18,4 +25,20 @@ export const areFiltersCleared = (filters) => {
   }
 
   return cleared;
+};
+
+export const computeProductsWhere = (filters) => {
+  let productsWhere = {};
+
+  if (filters.price && filters.price.min) {
+    productsWhere['price_gte'] = parseFloat(filters.price.min);
+  }
+  if (filters.price && filters.price.max) {
+    productsWhere['price_lte'] = parseFloat(filters.price.max);
+  }
+  if (filters.shops.length) {
+    productsWhere['shop'] = { name_in: filters.shops };
+  }
+
+  return productsWhere;
 };

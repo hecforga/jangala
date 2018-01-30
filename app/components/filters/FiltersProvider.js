@@ -1,22 +1,27 @@
 import React, { Component } from 'react';
 
-import { getFiltersInitialState } from '../../utilities/filters.js';
+import { getDefaultFilters } from '../../utilities/filters.js';
 
 class FiltersProvider extends Component {
   constructor(props) {
     super(props);
-    this.state = { appliedFilters: getFiltersInitialState(props.whichFilters) };
+    // We assume whichFilters is passed when copyFiltersFrom is not passed
+    if (props.copyFiltersFrom) {
+      this.state = { filters: JSON.parse(JSON.stringify(props.copyFiltersFrom)) };
+    } else {
+      this.state = { filters: getDefaultFilters(props.whichFilters) };
+    }
   }
 
   render() {
     return React.cloneElement(this.props.children, {
-      appliedFilters: this.state.appliedFilters,
-      setAppliedFilters: this.setAppliedFilters,
+      filters: this.state.filters,
+      setFilters: this.setFilters,
     });
   }
 
-  setAppliedFilters = (newFilters) => {
-    this.setState({ appliedFilters: newFilters });
+  setFilters = (newFilters) => {
+    this.setState({ filters: newFilters });
   }
 }
 

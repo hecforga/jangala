@@ -3,6 +3,8 @@ import { StyleSheet, View, ActivityIndicator } from 'react-native';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 
+import { computeProductsWhere } from '../../utilities/filters.js';
+
 import ProductsListHeader from '../products_list/ProductsListHeader.js';
 import ProductsList from '../products_list/ProductsList.js';
 
@@ -29,16 +31,20 @@ class CategoryContainer extends Component {
   }
 
   onFilterButtonPress = () => {
-    const { navigation, appliedFilters, setAppliedFilters, categoryQuery } = this.props;
-
+    const { navigation, filters, categoryQuery } = this.props;
     navigation.navigate('Filters', {
-      appliedFilters,
-      setAppliedFilters,
+      appliedFilters: filters,
+      setAppliedFilters: this.setFilters,
       options: {
         shops: categoryQuery.category.shops.map((shop) => shop.name),
       },
     });
   };
+
+  setFilters = (currentFilters) => {
+    const { setFilters } = this.props;
+    setFilters(JSON.parse(JSON.stringify(currentFilters)));
+  }
 }
 
 const styles = StyleSheet.create({
@@ -54,7 +60,7 @@ const styles = StyleSheet.create({
 
 const CATEGORY_QUERY = gql`
   query CategoryQuery($id: ID!, $productsWhere: ProductWhereInput!) {
-    category(id: $id, orderBy: upda) {
+    category(id: $id) {
       id,
       name,
       products(where: $productsWhere) {
@@ -74,10 +80,10 @@ const CATEGORY_QUERY = gql`
 
 export default graphql(CATEGORY_QUERY, {
   name: 'categoryQuery',
-  options: ({ categoryId, appliedFilters }) => ({
+  options: ({ categoryId, filters }) => ({
     variables: {
       id: categoryId,
-      productsWhere: appliedFilters.shops.length ? { shop: { name_in: appliedFilters.shops } } : {},
-    },
+      productsWhere: computeProductsWhere(filters),
+    }
   }),
 })(CategoryContainer);
