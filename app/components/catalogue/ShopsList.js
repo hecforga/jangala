@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, ScrollView, TouchableHighlight, View, Text, Image } from 'react-native';
+import { Platform, StyleSheet, ScrollView, TouchableHighlight, View, Text, Image } from 'react-native';
 
 import * as layoutUtilities from '../../utilities/layout.js';
 
@@ -37,7 +37,7 @@ class ShopsList extends Component {
                 <Image
                   source={{ uri: shop.logoUrl }}
                   resizeMode={'contain'}
-                  borderRadius={100}
+                  borderRadius={this.getLogoBorderRadius()}
                   style={[styles.shopLogo, {
                     height: this.state.shopButtonHeight - BUTTON_PADDING,
                     width: this.state.shopButtonHeight - BUTTON_PADDING,
@@ -61,7 +61,12 @@ class ShopsList extends Component {
     const { height } = onLayoutEvent.nativeEvent.layout;
     const shopButtonHeight = layoutUtilities.computeListItemHeight(height, 0, DESIRED_BUTTON_HEIGHT, 0);
     this.setState({ shopButtonHeight });
-  }
+  };
+
+  getLogoBorderRadius = () => {
+    const imageHeight = this.state.shopButtonHeight - BUTTON_PADDING;
+    return Platform.OS === 'android' ? 2 * imageHeight : 0.5 * imageHeight;
+  };
 }
 
 const styles = StyleSheet.create({

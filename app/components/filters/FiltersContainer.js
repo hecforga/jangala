@@ -5,6 +5,7 @@ import { getDefaultFilters, areFiltersCleared } from '../../utilities/filters.js
 
 import PriceFilter from './PriceFilter.js';
 import ShopsFilter from './ShopsFilter.js';
+import CategoriesFilter from './CategoriesFilter.js';
 import MyButton from '../common/MyButton';
 
 class FiltersContainer extends Component {
@@ -24,6 +25,11 @@ class FiltersContainer extends Component {
             :
             <View>{null}</View>
           }
+          {whichFilters.indexOf('categories') > -1 ?
+            this.getCategoriesFilterComponent()
+            :
+            <View>{null}</View>
+          }
         </ScrollView>
         <View style={styles.buttonsContainer}>
           <MyButton
@@ -35,7 +41,7 @@ class FiltersContainer extends Component {
           />
           <MyButton
             title={'Aplicar'}
-            onPress={() => this.applyFilters()}
+            onPress={this.applyFilters}
             containerStyle={[styles.buttonContainer, { marginLeft: 8 }]}
             buttonStyle={styles.button}
           />
@@ -133,6 +139,46 @@ class FiltersContainer extends Component {
       setFilters(newFilters);
     }
   };
+
+  getCategoriesFilterComponent = () => {
+    const { options, filters } = this.props;
+
+    return (
+      // We assume options.shops is passed when filters.shops exists
+      <View style={styles.filterContainer}>
+        <CategoriesFilter
+          options={options.categories}
+          selectedCategories={filters.categories}
+          addCategoryFilter={this.addCategoryFilter}
+          removeCategoryFilter={this.removeCategoryFilter}
+        />
+      </View>
+    );
+  };
+
+  addCategoryFilter = (categoryName) => {
+    const { filters, setFilters } = this.props;
+    const newFilters = {
+      ...filters,
+      categories: filters.categories.concat(categoryName),
+    };
+    setFilters(newFilters);
+  };
+
+  removeCategoryFilter = (categoryName) => {
+    const { filters, setFilters } = this.props;
+    const index = filters.categories.indexOf(categoryName);
+    if (index > -1) {
+      const newFilters = {
+        ...filters,
+        categories: [
+          ...filters.categories.slice(0, index),
+          ...filters.categories.slice(index + 1),
+        ],
+      };
+      setFilters(newFilters);
+    }
+  };
 }
 
 const styles = StyleSheet.create({
@@ -148,7 +194,7 @@ const styles = StyleSheet.create({
   },
   buttonsContainer: {
     flexDirection: 'row',
-    margin: 16,
+    padding: 16,
   },
   buttonContainer: {
     flex: 1,

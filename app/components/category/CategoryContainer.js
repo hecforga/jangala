@@ -5,7 +5,6 @@ import gql from 'graphql-tag';
 
 import { computeProductsWhere } from '../../utilities/filters.js';
 
-import ProductsListHeader from '../products_list/ProductsListHeader.js';
 import ProductsList from '../products_list/ProductsList.js';
 
 class CategoryContainer extends Component {
@@ -24,8 +23,11 @@ class CategoryContainer extends Component {
 
     return (
       <View style={styles.container}>
-        <ProductsListHeader onFilterButtonPress={this.onFilterButtonPress} />
-        <ProductsList navigation={navigation} products={categoryQuery.category.products} />
+        <ProductsList
+          navigation={navigation}
+          products={categoryQuery.category.products}
+          onFilterButtonPress={this.onFilterButtonPress}
+        />
       </View>
     );
   }
@@ -44,7 +46,7 @@ class CategoryContainer extends Component {
   setFilters = (currentFilters) => {
     const { setFilters } = this.props;
     setFilters(JSON.parse(JSON.stringify(currentFilters)));
-  }
+  };
 }
 
 const styles = StyleSheet.create({

@@ -26,6 +26,7 @@ const CatalogueTabs = TabNavigator({
 }, {
   tabBarComponent: TabBarTop,
   tabBarPosition: 'top',
+  swipeEnabled: true,
   backBehavior: 'none',
   tabBarOptions: {
     style: {
@@ -33,11 +34,15 @@ const CatalogueTabs = TabNavigator({
       marginTop: Platform.OS === 'android' ? Constants.statusBarHeight : 0,
     },
     tabStyle: {
-      paddingTop: 0, // default padding: 8 (https://github.com/react-native-community/react-native-tab-view/blob/master/src/TabBar.js)
+      // default padding: 8 (https://github.com/react-native-community/react-native-tab-view/blob/master/src/TabBar.js)
+      // need to be 0 to show correctly in some devices
+      paddingTop: 8,
     },
     labelStyle: {
       fontWeight: '500',
-      marginTop: 0, // default margin: 8 (https://github.com/react-native-community/react-native-tab-view/blob/master/src/TabBar.js)
+      // default margin: 8 (https://github.com/react-native-community/react-native-tab-view/blob/master/src/TabBar.js)
+      // need to be 0 to show correctly in some devices
+      marginTop: 8,
     },
     activeTintColor: 'black',
     inactiveTintColor: 'grey',

@@ -1,7 +1,10 @@
 import React, { Component } from 'react';
 import { StyleSheet, View } from 'react-native';
 
+import FiltersProvider from '../filters/FiltersProvider.js';
 import ShopProfileContainer from './ShopProfileContainer.js';
+
+const WHICH_FILTERS_I_USE = ['price', 'categories'];
 
 class ShopProfileScreen extends Component {
   static navigationOptions = ({ navigation }) => ({
@@ -13,7 +16,9 @@ class ShopProfileScreen extends Component {
 
     return (
       <View style={styles.container}>
-        <ShopProfileContainer shopId={navigation.state.params.shopId} />
+        <FiltersProvider whichFilters={WHICH_FILTERS_I_USE}>
+          <ShopProfileContainer navigation={navigation} shopId={navigation.state.params.shopId} />
+        </FiltersProvider>
       </View>
     );
   }

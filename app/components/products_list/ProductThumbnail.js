@@ -34,23 +34,23 @@ class ProductThumbnail extends Component {
 
 const styles = StyleSheet.create({
   productThumbnail: {
-    backgroundColor: 'white'
+    backgroundColor: 'white',
   },
   priceContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    marginTop: 10,
     marginBottom: 4,
-    minHeight: 30
+    minHeight: 30,
   },
   price: {
     fontSize: 16,
-    fontWeight: 'bold'
+    fontWeight: 'bold',
   },
   image: {
     flex: 1,
     aspectRatio: 0.8,
-    marginBottom: 10,
   },
 });
 

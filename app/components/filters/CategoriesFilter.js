@@ -2,21 +2,21 @@ import React, { Component } from 'react';
 import { StyleSheet, View, Text, TouchableHighlight } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 
-class ShopsFilter extends Component {
+class CategoriesFilter extends Component {
   render() {
-    const { options, addShopFilter, removeShopFilter } = this.props;
+    const { options, addCategoryFilter, removeCategoryFilter } = this.props;
 
     return (
       <View>
-        <Text style={styles.title}>Tiendas:</Text>
-        {options.map((shopName, index) =>
+        <Text style={styles.title}>Categorías:</Text>
+        {options.map((categoryName, index) =>
           <TouchableHighlight
             key={index}
-            onPress={() => this.isShopSelected(shopName) ? removeShopFilter(shopName) : addShopFilter(shopName)}
+            onPress={() => this.isCategorySelected(categoryName) ? removeCategoryFilter(categoryName) : addCategoryFilter(categoryName)}
           >
             <View style={[styles.button, { borderTopWidth: index === 0 ? 0 : StyleSheet.hairlineWidth }]}>
-              <Text style={styles.text}>{shopName}</Text>
-              {this.isShopSelected(shopName) ?
+              <Text style={styles.text}>{categoryName}</Text>
+              {this.isCategorySelected(categoryName) ?
                 <FontAwesome name={'check'} style={styles.icon} />
                 :
                 null
@@ -28,10 +28,10 @@ class ShopsFilter extends Component {
     );
   }
 
-  isShopSelected = (shopName) => {
-    const { selectedShops } = this.props;
+  isCategorySelected = (categoryName) => {
+    const { selectedCategories } = this.props;
 
-    return selectedShops.indexOf(shopName) > -1;
+    return selectedCategories.indexOf(categoryName) > -1;
   }
 }
 
@@ -60,4 +60,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default ShopsFilter;
+export default CategoriesFilter;

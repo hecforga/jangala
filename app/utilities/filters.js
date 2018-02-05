@@ -36,8 +36,11 @@ export const computeProductsWhere = (filters) => {
   if (filters.price && filters.price.max) {
     productsWhere['price_lte'] = parseFloat(filters.price.max);
   }
-  if (filters.shops.length) {
+  if (filters.shops && filters.shops.length) {
     productsWhere['shop'] = { name_in: filters.shops };
+  }
+  if (filters.categories && filters.categories.length) {
+    productsWhere['category'] = { name_in: filters.categories };
   }
 
   return productsWhere;
