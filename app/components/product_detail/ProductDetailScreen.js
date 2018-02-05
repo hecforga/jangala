@@ -7,7 +7,14 @@ import ProductDetailContainer from './ProductDetailContainer.js';
 class ProductDetailScreen extends Component {
   static navigationOptions = {
     title: '',
-    headerStyle: { position: 'absolute', top: 0, left: 0, right: 0, backgroundColor: 'transparent', zIndex: 100, shadowColor: 'transparent' },
+    headerStyle: {
+      position: 'absolute',
+      top: 0, left: 0, right: 0,
+      backgroundColor: 'transparent',
+      zIndex: 100,
+      borderBottomWidth: 0,
+      elevation: 0,
+    },
     tabBarVisible: false,
   };
 
