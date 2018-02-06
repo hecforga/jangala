@@ -29,6 +29,14 @@ class ShopProfileContainer extends Component {
       }),
     }];
 
+    let borderTransform = [{
+      translateY: this.state.scrollAnimatedValue.interpolate({
+        inputRange: [0, moderateScale(deviceHeight * 0.632)],
+        outputRange: [0, -moderateScale(deviceHeight * 0.632)],
+        extrapolateRight: 'clamp',
+      }),
+    }];
+
     if (shopQuery.loading) {
       return (
         <View style={styles.centeredContainer}>
@@ -42,9 +50,10 @@ class ShopProfileContainer extends Component {
     return (
       <View style={styles.container}
       >
-        <Animated.View style={[styles.aux, {
-          transform,
-        }]}
+        <Animated.View
+          style={[styles.aux, {
+            transform,
+          }]}
         >
           <View
             key='coverImage'
@@ -75,6 +84,11 @@ class ShopProfileContainer extends Component {
             </View>
           </View>
         </Animated.View>
+        <Animated.View
+          style={[styles.tinyGrayLineSeparator, {
+            transform: borderTransform,
+          }]}
+        />
         <ProductsList
           navigation={navigation}
           animated={true}
@@ -122,13 +136,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   aux: {
-    position: 'absolute', top: 0, left: 0, right: 0,
+    position: 'absolute',
+    top: 0, left: 0, right: 0,
     height: moderateScale(deviceHeight * 0.632),
     backgroundColor: 'white',
   },
   coverImageContainer: {
     height: moderateScale(deviceHeight * 0.375),
-    alignItems:'center',
+    alignItems: 'center',
   },
   coverImage: {
     flex: 1,
@@ -159,6 +174,13 @@ const styles = StyleSheet.create({
   logoImage: {
     flex: 1,
     borderRadius: 25,
+  },
+  tinyGrayLineSeparator: {
+    position: 'absolute',
+    top: moderateScale(deviceHeight * 0.632) - moderateScale(1.38), left: 0, right: 0,
+    height: moderateScale(1.38),
+    marginHorizontal: moderateScale(23),
+    backgroundColor: '#ebebeb',
   },
 });
 

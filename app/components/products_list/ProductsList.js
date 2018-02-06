@@ -86,7 +86,6 @@ class ProductsList extends Component {
     else if (item.stickyHeader) {
       return (
         <View>
-          <View style={styles.tinyGrayLineSeparator}/>
           <ProductsListHeader onFilterButtonPress={onFilterButtonPress}/>
         </View>
       );
@@ -120,11 +119,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: CONTAINER_PADDING,
     backgroundColor: 'white',
-  },
-  tinyGrayLineSeparator: {
-    height: moderateScale(1.38),
-    marginHorizontal:moderateScale(23),
-    backgroundColor:'#ebebeb',
   },
 });
 
