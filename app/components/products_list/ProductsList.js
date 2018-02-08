@@ -10,18 +10,37 @@ const CONTAINER_PADDING = 8;
 const PRODUCT_THUMBNAIL_CONTAINER_MARGIN = 8;
 
 class ProductsList extends Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      bottomEmptyViewHeight: undefined,
+    };
+  }
   componentWillMount() {
     const { height, width } = Dimensions.get('window');
     this.imageWidth = (width - 2 * CONTAINER_PADDING - 4 * PRODUCT_THUMBNAIL_CONTAINER_MARGIN) / 2;
   }
 
+  shouldComponentUpdate(nextProps, nextState) {
+    const differentHeight = this.state.bottomEmptyViewHeight === nextState.bottomEmptyViewHeight;
+    console.log(this.state);
+    console.log(nextState);
+    return !differentHeight;
+  }
+
   render() {
-    const { transparentViewHeight, onScroll, animated } = this.props;
+    const { transparentViewHeight, onScroll, animated, style } = this.props;
 
     const productsInArraysOf2 = this.getProductsInArraysOf2();
     const stickyHeader = [{ stickyHeader: true }];
     let dataToRender = stickyHeader.concat(productsInArraysOf2);
     let stickyHeaderIndex = 0;
+
+    if(productsInArraysOf2.length === 1){    
+      let bottomEmptyView = [{ bottomEmptyView: true }];
+      dataToRender = dataToRender.concat(bottomEmptyView);
+    }
 
     if (transparentViewHeight) {
       let transparentView = [{ transparentView: true, height: transparentViewHeight }];
@@ -89,9 +108,17 @@ class ProductsList extends Component {
           <ProductsListHeader onFilterButtonPress={onFilterButtonPress}/>
         </View>
       );
+    }
+    else if (item.bottomEmptyView) {
+      return (
+        <View style={{backgroundColor:'red', height:this.state.bottomEmptyViewHeight}}/>
+      );
     } else {
       return (
-        <View style={styles.listRow}>
+        <View 
+          style={styles.listRow}
+          onLayout={this.computeEmptyViewHeight}
+        >
           {item.map((product) =>
             <ProductThumbnail
               key={ product.id}
@@ -106,6 +133,15 @@ class ProductsList extends Component {
           )}
         </View>
       );
+    }
+  }
+
+  computeEmptyViewHeight = (onLayoutEvent) =>{
+    if(!this.state.bottomEmptyViewHeight){
+      const {style} = this.props;
+      var bottomEmptyViewHeight = style - onLayoutEvent.nativeEvent.layout.height - 50;
+      console.log(bottomEmptyViewHeight);
+      this.setState({bottomEmptyViewHeight: bottomEmptyViewHeight})
     }
   }
 }

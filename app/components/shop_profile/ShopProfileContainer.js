@@ -23,7 +23,7 @@ class ShopProfileContainer extends Component {
 
     let transform = [{
       translateY: this.state.scrollAnimatedValue.interpolate({
-        inputRange: [0, moderateScale(deviceHeight * 0.72)],
+        inputRange: [0, moderateScale(deviceHeight * 0.632)],
         outputRange: [0, -300],
         extrapolateRight: 'clamp',
       }),
@@ -49,6 +49,10 @@ class ShopProfileContainer extends Component {
 
     return (
       <View style={styles.container}
+      >
+      <View
+        style={styles.container}
+        onLayout={this.computeProductsListHeight}
       >
         <Animated.View
           style={[styles.aux, {
@@ -90,6 +94,7 @@ class ShopProfileContainer extends Component {
           }]}
         />
         <ProductsList
+          style={this.state.productsListHeight}
           navigation={navigation}
           animated={true}
           products={shopQuery.shop.products}
@@ -105,6 +110,7 @@ class ShopProfileContainer extends Component {
         >
         </ProductsList>
       </View>
+      </View>
     );
   }
 
@@ -117,7 +123,11 @@ class ShopProfileContainer extends Component {
         categories: shopQuery.shop.categories.map((category) => category.name),
       },
     });
-  };
+  }
+
+  computeProductsListHeight = (onLayoutEvent) => {
+    this.setState({productsListHeight:onLayoutEvent.nativeEvent.layout.height});
+  }
 
   setFilters = (currentFilters) => {
     const { setFilters } = this.props;
