@@ -28,7 +28,11 @@ export const areFiltersCleared = (filters) => {
 };
 
 export const computeProductsWhere = (filters) => {
-  let productsWhere = {};
+  let productsWhere = {
+    variants_some: {
+      availableForSale: true,
+    },
+  };
 
   if (filters.price && filters.price.min) {
     productsWhere['price_gte'] = parseFloat(filters.price.min);
