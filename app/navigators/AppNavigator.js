@@ -15,6 +15,9 @@ import ShopProfileScreen from '../components/shop_profile/ShopProfileScreen.js';
 import CategoryScreen from '../components/category/CategoryScreen.js';
 import FiltersScreen from '../components/filters/FiltersScreen.js';
 import ProductDetailScreen from '../components/product_detail/ProductDetailScreen.js';
+import UserSettingsScreen from '../components/user_settings/UserSettingsScreen.js';
+import AddressInfoScreen from '../components/user_settings/AddressInfoScreen.js';
+import UserInfoScreen from '../components/user_settings/UserInfoScreen.js';
 
 const CatalogueTabs = TabNavigator({
   ShopsList: {
@@ -70,7 +73,10 @@ const CatalogueNavigator = StackNavigator({
 });
 
 const HomeNavigator = StackNavigator({
-  Home: { screen: HomeScreen }
+  Home: { screen: HomeScreen },
+  UserSettings: { screen: UserSettingsScreen },
+  UserInfo: { screen: UserInfoScreen },
+  AddressInfo: { screen: AddressInfoScreen },
 }, {
   initialRouteName: 'Home',
   navigationOptions: {
@@ -174,12 +180,40 @@ class AppWithNavigationState extends Component {
 
   onBackPress = () => {
     const { dispatch, nav } = this.props;
-    const initialScreenIndex = tabs.indexOf(getInitialTabName());
-    if (nav.index === initialScreenIndex && nav.routes[initialScreenIndex].routes.length === 1) {
-      return false;
+
+    const homeTab = nav.routes.find((route) => route.routeName==='HomeTab' );
+    const addressInfoScreen = homeTab.routes.find((route) => route.routeName === 'AddressInfo');
+    const userInfoScreen = homeTab.routes.find((route) => route.routeName === 'UserInfo');
+    if( addressInfoScreen ){
+
+      if(!addressInfoScreen.params.canGoBack){
+        addressInfoScreen.params.setConfirmationModalIsVisible(true);
+        return true;
+      }
+      else{
+        dispatch(NavigationActions.back());
+        return true;
+      }
     }
-    dispatch(NavigationActions.back());
-    return true;
+    else if( userInfoScreen ){
+      
+      if(!userInfoScreen.params.canGoBack){
+        userInfoScreen.params.setConfirmationModalIsVisible(true);
+        return true;
+      }
+      else{
+        dispatch(NavigationActions.back());
+        return true;
+      }
+    }
+    else{
+      const initialScreenIndex = tabs.indexOf(getInitialTabName());
+      if (nav.index === initialScreenIndex && nav.routes[initialScreenIndex].routes.length === 1) {
+        return false;
+      }
+      dispatch(NavigationActions.back());
+      return true;
+    }
   };
 
   render() {
