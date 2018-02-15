@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+
+import ShoppingBagContainer from './ShoppingBagContainer.js';
 
 class ShoppingBagScreen extends Component {
   static navigationOptions = {
-    title: 'Bolsa',
+    title: 'Mi bolsa', // TODO: show number of lineItems
   };
 
   render() {
@@ -11,7 +13,7 @@ class ShoppingBagScreen extends Component {
 
     return (
       <View style={styles.container}>
-        <Text>Hola</Text>
+        <ShoppingBagContainer />
       </View>
     );
   }
@@ -20,9 +22,7 @@ class ShoppingBagScreen extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  }
+  },
 });
 
 export default ShoppingBagScreen;

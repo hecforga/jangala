@@ -4,7 +4,7 @@ import { Platform, StyleSheet, ScrollView, TouchableHighlight, View, Text, Image
 import * as layoutUtilities from '../../utilities/layout.js';
 
 const DESIRED_BUTTON_HEIGHT = 56;
-const BUTTON_PADDING = 8;
+const BUTTON_PADDING = 16;
 
 class ShopsList extends Component {
   constructor(props) {

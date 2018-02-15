@@ -51,7 +51,7 @@ class ProductDetailContainer extends Component {
             </View>
             <View style={styles.priceAndSizeContainer}>
               <View style={styles.priceContainer}>
-                <Text style={styles.priceText}>{fromProductsInfo.getPriceLabel(productQuery.product)}</Text>
+                <Text style={styles.priceText}>{fromProductsInfo.getPriceLabel(productQuery.product.price)}</Text>
               </View>
               <View style={{ flex: 1 }}>
                 {fromProductsInfo.hasUniqueSize(productQuery.product) ?
@@ -123,8 +123,8 @@ class ProductDetailContainer extends Component {
     this.hideSizeModalPicker();
   };
 
-  addToBag = () => {
-    const { productQuery, setAutomaticallyAddToBagOnSizeChange } = this.props;
+  addToBag = async () => {
+    const { productQuery, setAutomaticallyAddToBagOnSizeChange, addProductToShoppingBag } = this.props;
     setAutomaticallyAddToBagOnSizeChange(false);
     const selectedOptions = this.computeSelectedOptions();
     const compatibleProductVariants = fromProductsInfo.computeCompatibleVariants(productQuery.product, selectedOptions, []);
@@ -135,12 +135,17 @@ class ProductDetailContainer extends Component {
       if (!sizeOption.value) {
         setAutomaticallyAddToBagOnSizeChange(true);
         this.showSizeModalPicker();
-        return;
       }
+      return;
     }
 
     const productVariant = compatibleProductVariants[0];
-    console.log('Producto (variante ' + productVariant.id + ') añadido a tu bolsa!')
+    const mutationPayload = await addProductToShoppingBag({ variables: {productVariantId: productVariant.id } });
+    if (mutationPayload.data.addProductToShoppingBag) {
+      console.log('Producto añadido a tu bolsa!');
+    } else {
+      console.log('Lo sentimos. El producto no ha podido ser añadido a tu bolsa.')
+    }
   };
 
   computeSelectedOptions = () => {
@@ -154,12 +159,12 @@ class ProductDetailContainer extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1
+    flex: 1,
   },
   centeredContainer: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
   topContainer: {
     flex: 1,
@@ -267,6 +272,33 @@ const PRODUCT_QUERY = gql`
   }
 `;
 
+const ADD_PRODUCT_TO_SHOPPING_BAG_MUTATION = gql`
+  mutation AddProductToShoppingBagMutation($productVariantId: ID!) {
+    addProductToShoppingBag(productVariantId: $productVariantId) {
+      id
+      lineItems {
+        id
+        quantity
+        variant {
+          id
+          product {
+            imagesUrls
+            price
+            shop {
+              name
+            }
+            title
+          }
+          selectedOptions {
+            name
+            value
+          }
+        }
+      }
+    }
+  }
+`;
+
 const Loading = () => (
   <View style={styles.centeredContainer}>
     <ActivityIndicator size='large' />
@@ -286,6 +318,7 @@ export default compose(
     options: ({ productId }) => ({ variables: { id: productId } }),
   }),
   renderWhileLoading(Loading, 'productQuery'),
+  graphql(ADD_PRODUCT_TO_SHOPPING_BAG_MUTATION, { name: 'addProductToShoppingBag' }),
   withState('sizeModalPickerIsVisible', 'setSizeModalPickerIsVisible', false),
   withState('selectedSize', 'setSelectedSize', ({ productQuery }) => fromProductsInfo.getDefaultSize(productQuery.product)),
   withState('automaticallyAddToBagOnSizeChange', 'setAutomaticallyAddToBagOnSizeChange', false),

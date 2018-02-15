@@ -1,4 +1,4 @@
-export const getPriceLabel = (product) => product.price.toFixed(2) + ' €';
+export const getPriceLabel = (price) => price.toFixed(2) + ' €';
 
 export const hasUniqueSize = (product) => {
   // We assume all products have a "size" option with at least 1 value
