@@ -4,7 +4,10 @@ import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 import { branch, compose, renderComponent } from 'recompose';
 
+import { renderWhileLoading } from '../common/Loading.js';
+import { renderIfShoppingBagEmpty } from './ShoppingBagEmpty.js';
 import * as fromProductsInfo from '../../utilities/productsInfo.js';
+import { runMutation } from '../../utilities/apollo.js';
 
 import ShoppingBagLineItemsList from './ShoppingBagLineItemsList.js';
 import MyButton from '../common/MyButton.js';
@@ -14,15 +17,18 @@ const CONTAINER_PADDING = 16;
 class ShoppingBagContainer extends Component {
   render() {
     const { meQuery } = this.props;
+    const lineItems = meQuery.me.shoppingBag.lineItems;
 
     return (
       <View style={styles.container}>
-        <ShoppingBagLineItemsList lineItems={meQuery.me.shoppingBag.lineItems} />
+        <ShoppingBagLineItemsList
+          lineItems={lineItems}
+          onRemoveLineItemPress={this.onRemoveLineItemPress}
+        />
         <View style={styles.bottomContainer}>
           <View style={styles.totalPriceRow}>
             <View style={{ flex: 1, flexDirection: 'row' }}>
-              <Text style={styles.totalText}>Total:</Text>
-              <Text style={styles.withOutShippingText}>(sin envío)</Text>
+              <Text>{lineItems.length + ' Artículos - Total (sin envío):'}</Text>
             </View>
             <Text style={styles.totalPriceText}>{fromProductsInfo.getPriceLabel(this.computeTotalPrice())}</Text>
           </View>
@@ -48,6 +54,21 @@ class ShoppingBagContainer extends Component {
       total + (lineItem.quantity * lineItem.variant.product.price)
     ), 0)
   );
+
+  onRemoveLineItemPress = async (lineItemId) => {
+    const { removeShoppingBagLineItem } = this.props;
+    // TODO: Optimistic UI
+    const mutationPayload = await runMutation(
+      'removeShoppingBagLineItem',
+      removeShoppingBagLineItem,
+      { variables: { lineItemId } },
+    );
+    if (mutationPayload.data.removeShoppingBagLineItem) {
+      console.log('Producto eliminado de tu bolsa.');
+    } else {
+      console.log('Lo sentimos. El producto no ha podido ser eliminado de tu bolsa.')
+    }
+  }
 }
 
 const styles = StyleSheet.create({
@@ -68,12 +89,6 @@ const styles = StyleSheet.create({
     paddingBottom: 8,
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderColor: '#dddddd',
-  },
-  totalText: {
-    fontWeight: 'bold',
-  },
-  withOutShippingText: {
-    marginLeft: 4,
   },
   totalPriceText: {
     fontWeight: 'bold',
@@ -116,20 +131,36 @@ const ME_QUERY = gql`
   }
 `;
 
-const Loading = () => (
-  <View style={styles.centeredContainer}>
-    <ActivityIndicator size='large' />
-  </View>
-);
-
-const renderWhileLoading = (component, propName = 'data') =>
-  branch(
-    props => props[propName] && props[propName].loading,
-    renderComponent(component),
-  )
-;
+const REMOVE_SHOPPING_BAG_LINE_ITEM_MUTATION = gql`
+  mutation RemoveShoppingBagLineItemMutation($lineItemId: ID!) {
+    removeShoppingBagLineItem(lineItemId: $lineItemId) {
+      id
+      lineItems {
+        id
+        quantity
+        variant {
+          id
+          product {
+            imagesUrls
+            price
+            shop {
+              name
+            }
+            title
+          }
+          selectedOptions {
+            name
+            value
+          }
+        }
+      }
+    }
+  }
+`;
 
 export default compose(
   graphql(ME_QUERY, { name: 'meQuery' }),
-  renderWhileLoading(Loading, 'meQuery'),
+  renderWhileLoading('meQuery'),
+  renderIfShoppingBagEmpty(),
+  graphql(REMOVE_SHOPPING_BAG_LINE_ITEM_MUTATION, { name: 'removeShoppingBagLineItem' }),
 )(ShoppingBagContainer);

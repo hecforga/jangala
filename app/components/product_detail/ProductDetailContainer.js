@@ -6,6 +6,7 @@ import gql from 'graphql-tag';
 import { withState, branch, compose, renderComponent } from 'recompose';
 
 import * as fromProductsInfo from '../../utilities/productsInfo.js';
+import { runMutation } from '../../utilities/apollo.js';
 
 import MyButton from '../common/MyButton.js';
 import ModalPicker from '../common/ModalPicker.js';
@@ -124,7 +125,13 @@ class ProductDetailContainer extends Component {
   };
 
   addToBag = async () => {
-    const { productQuery, setAutomaticallyAddToBagOnSizeChange, addProductToShoppingBag } = this.props;
+    const {
+      navigation,
+      productQuery,
+      setAutomaticallyAddToBagOnSizeChange,
+      addProductToShoppingBag,
+    } = this.props;
+
     setAutomaticallyAddToBagOnSizeChange(false);
     const selectedOptions = this.computeSelectedOptions();
     const compatibleProductVariants = fromProductsInfo.computeCompatibleVariants(productQuery.product, selectedOptions, []);
@@ -140,11 +147,17 @@ class ProductDetailContainer extends Component {
     }
 
     const productVariant = compatibleProductVariants[0];
-    const mutationPayload = await addProductToShoppingBag({ variables: {productVariantId: productVariant.id } });
+    // TODO: show activity indicator in the "addToBag" button while waiting for the mutation to resolve
+    const mutationPayload = await runMutation(
+      'addProductToShoppingBag',
+      addProductToShoppingBag,
+      { variables: { productVariantId: productVariant.id } },
+    );
     if (mutationPayload.data.addProductToShoppingBag) {
+      navigation.goBack();
       console.log('Producto añadido a tu bolsa!');
     } else {
-      console.log('Lo sentimos. El producto no ha podido ser añadido a tu bolsa.')
+      console.log('Lo sentimos. El producto no ha podido ser añadido a tu bolsa.');
     }
   };
 

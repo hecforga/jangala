@@ -8,7 +8,7 @@ const LINE_ITEM_MARGIN = 8;
 
 class ShoppingBagLineItemsList extends Component {
   render() {
-    const { lineItems } = this.props;
+    const { lineItems, onRemoveLineItemPress } = this.props;
 
     return (
       <ScrollView
@@ -18,7 +18,10 @@ class ShoppingBagLineItemsList extends Component {
         {lineItems.map((lineItem, index) => (
           <ShoppingBagLineItem
             key={index}
+            id={lineItem.id}
+            quantity={lineItem.quantity}
             productInfo={this.getProductInfo(lineItem)}
+            onRemoveLineItemPress={onRemoveLineItemPress}
             containerStyle={{
               marginTop: index === 0 ? CONTAINER_PADDING : 0,
               marginBottom: LINE_ITEM_MARGIN,
@@ -32,7 +35,6 @@ class ShoppingBagLineItemsList extends Component {
   getProductInfo = (lineItem) => ({
     imageUrl: lineItem.variant.product.imagesUrls[0],
     price: lineItem.variant.product.price,
-    quantity: lineItem.quantity,
     shopName: lineItem.variant.product.shop.name,
     size: lineItem.variant.selectedOptions.find((option) => option.name === 'size').value,
     title: lineItem.variant.product.title,

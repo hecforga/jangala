@@ -5,7 +5,7 @@ import ShoppingBagContainer from './ShoppingBagContainer.js';
 
 class ShoppingBagScreen extends Component {
   static navigationOptions = {
-    title: 'Mi bolsa', // TODO: show number of lineItems
+    title: 'Mi bolsa',
   };
 
   render() {
