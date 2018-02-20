@@ -10,6 +10,7 @@ import { runMutation } from '../../utilities/apollo.js';
 
 import MyButton from '../common/MyButton.js';
 import ModalPicker from '../common/ModalPicker.js';
+import AddingProductToShoppingBagModal from './AddingProductToShoppingBagModal.js';
 
 class ProductDetailContainer extends Component {
   componentDidUpdate() {
@@ -20,7 +21,7 @@ class ProductDetailContainer extends Component {
   }
 
   render() {
-    const { productQuery, sizeModalPickerIsVisible, selectedSize } = this.props;
+    const { productQuery, sizeModalPickerIsVisible, selectedSize, addingProductToShoppingBag } = this.props;
 
     // Add error handling (wait until this issue is solved: https://github.com/apollographql/apollo-client/issues/2513)
 
@@ -99,6 +100,7 @@ class ProductDetailContainer extends Component {
           selectedValue={selectedSize}
           onValueChange={this.onSizeChange}
         />
+        <AddingProductToShoppingBagModal isVisible={addingProductToShoppingBag} />
       </View>
     );
   }
@@ -129,6 +131,7 @@ class ProductDetailContainer extends Component {
       navigation,
       productQuery,
       setAutomaticallyAddToBagOnSizeChange,
+      setAddingProductToShoppingBag,
       addProductToShoppingBag,
     } = this.props;
 
@@ -147,15 +150,18 @@ class ProductDetailContainer extends Component {
     }
 
     const productVariant = compatibleProductVariants[0];
-    // TODO: show activity indicator in the "addToBag" button while waiting for the mutation to resolve
+    setAddingProductToShoppingBag(true);
     const mutationPayload = await runMutation(
       'addProductToShoppingBag',
       addProductToShoppingBag,
       { variables: { productVariantId: productVariant.id } },
     );
+    setAddingProductToShoppingBag(false);
     if (mutationPayload.data.addProductToShoppingBag) {
       navigation.goBack();
       console.log('Producto añadido a tu bolsa!');
+    } else if (mutationPayload.error.name === 'ShoppingBagLineItemAlreadyExistsError') {
+      console.log('ShoppingBagLineItemAlreadyExistsError');
     } else {
       console.log('Lo sentimos. El producto no ha podido ser añadido a tu bolsa.');
     }
@@ -335,4 +341,5 @@ export default compose(
   withState('sizeModalPickerIsVisible', 'setSizeModalPickerIsVisible', false),
   withState('selectedSize', 'setSelectedSize', ({ productQuery }) => fromProductsInfo.getDefaultSize(productQuery.product)),
   withState('automaticallyAddToBagOnSizeChange', 'setAutomaticallyAddToBagOnSizeChange', false),
+  withState('addingProductToShoppingBag', 'setAddingProductToShoppingBag', false),
 )(ProductDetailContainer);

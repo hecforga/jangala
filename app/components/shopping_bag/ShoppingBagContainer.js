@@ -66,7 +66,7 @@ class ShoppingBagContainer extends Component {
     if (mutationPayload.data.removeShoppingBagLineItem) {
       console.log('Producto eliminado de tu bolsa.');
     } else {
-      console.log('Lo sentimos. El producto no ha podido ser eliminado de tu bolsa.')
+      console.log('Lo sentimos. El producto no ha podido ser eliminado de tu bolsa.');
     }
   }
 }

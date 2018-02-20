@@ -22,3 +22,5 @@ export const renderWhileLoading = (propName = 'data') =>
     renderComponent(Loading),
   )
 ;
+
+export default Loading;

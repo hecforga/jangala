@@ -15,16 +15,20 @@ export const getDefaultFilters = (whichFilters) => {
 };
 
 export const areFiltersCleared = (filters) => {
-  let cleared = true;
-
-  if (filters.shops) {
-    cleared = filters.shops.length === 0;
+  if (filters.price && filters.price.min !== null) {
+    return false;
   }
-  if (filters.categories) {
-    cleared = filters.categories.length === 0;
+  if (filters.price && filters.price.max !== null) {
+    return false;
+  }
+  if (filters.shops && filters.shops.length > 0) {
+    return false;
+  }
+  if (filters.categories && filters.categories.length > 0) {
+    return false;
   }
 
-  return cleared;
+  return true;
 };
 
 export const computeProductsWhere = (filters) => {
