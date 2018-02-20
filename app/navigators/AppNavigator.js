@@ -181,8 +181,7 @@ export const LoggedOutAppNavigator = StackNavigator({
 
 class AppWithNavigationState extends Component {
   componentWillMount() {
-    const { checkLoggedIn, logOut } = this.props;
-    logOut();
+    const { checkLoggedIn } = this.props;
     checkLoggedIn();
   }
   componentDidMount() {
@@ -206,14 +205,14 @@ class AppWithNavigationState extends Component {
   render() {
     const { dispatch, loggedOutNav, loggedInNav, checkedLoggedIn, token } = this.props;
 
-    if (!checkedLoggedIn){
+    if(!checkedLoggedIn){
       return null;
     }
 
-    if (!token) {
+    if(!token){
       return <LoggedOutAppNavigator navigation={addNavigationHelpers({ dispatch, state: loggedOutNav })} />
     }
-    else {
+    else{
       return <LoggedInAppNavigator navigation={addNavigationHelpers({ dispatch, state: loggedInNav })} />
     }
   }

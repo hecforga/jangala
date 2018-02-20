@@ -1,8 +1,11 @@
 import React, { Component } from 'react';
-import { ApolloClient, HttpLink, ApolloLink, InMemoryCache } from 'apollo-client-preset';
+import { AsyncStorage } from "react-native";
+
+import { ApolloClient, HttpLink, ApolloLink, InMemoryCache, from } from 'apollo-client-preset';
+import { setContext } from "apollo-link-context";
 
 import configureStore from './configureStore.js';
-import token from './constants.js';
+import { AUTH_TOKEN_KEY } from './constants.js';
 
 import Root from './components/Root.js';
 
@@ -12,21 +15,21 @@ export default class App extends Component {
 
     const httpLink = new HttpLink({ uri: 'https://jangala.herokuapp.com' });
 
-    const middlewareAuthLink = new ApolloLink((operation, forward) => {
-      const authorizationHeader = token ? `Bearer ${token}` : null;
-      operation.setContext({
-        headers: {
-          authorization: authorizationHeader,
-        },
-      });
-      return forward(operation);
-    });
-
-    const httpLinkWithAuthToken = middlewareAuthLink.concat(httpLink);
+    const middlewareAuthLink = setContext(operation =>
+      AsyncStorage.getItem(AUTH_TOKEN_KEY).then(token => {
+        const authorizationHeader = token ? `Bearer ${token}` : null; 
+        return {
+          // Make sure to actually set the headers here
+          headers: { 
+            authorization: authorizationHeader,
+          },
+        };
+      })
+    );
 
     this.client = new ApolloClient({
-      link: httpLinkWithAuthToken,
-      cache: new InMemoryCache()
+      link: from([middlewareAuthLink, httpLink]),
+      cache: new InMemoryCache(),
     });
 
     this.store = configureStore();
