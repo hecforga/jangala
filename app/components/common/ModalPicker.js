@@ -11,11 +11,8 @@ class ModalPicker extends Component {
         isVisible={isVisible}
         onBackButtonPress={onBackButtonPress}
         onBackdropPress={onBackdropPress}
-        backDropColor={'white'}
-        backDropOpacity={0}
-        style={styles.container}
       >
-        <View style={{ backgroundColor: 'white' }}>
+        <ScrollView contentContainerStyle={styles.container}>
           {data.map((option) => (
             <TouchableHighlight
               key={option.value}
@@ -27,7 +24,7 @@ class ModalPicker extends Component {
               </View>
             </TouchableHighlight>
           ))}
-        </View>
+        </ScrollView>
       </Modal>
     );
   }
@@ -45,8 +42,8 @@ class ModalPicker extends Component {
 
 const styles = StyleSheet.create({
   container: {
-  },
-  scrollView: {
+    flex: 1,
+    justifyContent: 'center',
   },
   optionButton: {
     backgroundColor: 'white',

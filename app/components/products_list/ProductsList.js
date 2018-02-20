@@ -63,6 +63,9 @@ class ProductsList extends Component {
       }
       count++;
     });
+    if (aux.length) {
+      productsInArraysOf2.push(aux);
+    }
 
     return productsInArraysOf2;
   };

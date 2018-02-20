@@ -23,7 +23,7 @@ class ProductDetailScreen extends Component {
 
     return (
       <View style={styles.container}>
-        <ProductDetailContainer productId={navigation.state.params.productId} />
+        <ProductDetailContainer navigation={navigation} productId={navigation.state.params.productId} />
       </View>
     );
   }

@@ -3,39 +3,30 @@ import { StyleSheet, View, ActivityIndicator, Text, Image, TouchableOpacity, Tou
 import { FontAwesome } from '@expo/vector-icons';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
+import { withState, branch, compose, renderComponent } from 'recompose';
 
 import * as fromProductsInfo from '../../utilities/productsInfo.js';
+import { runMutation } from '../../utilities/apollo.js';
 
 import MyButton from '../common/MyButton.js';
 import ModalPicker from '../common/ModalPicker.js';
+import AddingProductToShoppingBagModal from './AddingProductToShoppingBagModal.js';
 
 class ProductDetailContainer extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      sizeModalPickerIsVisible: false,
-      size: 's'
-    };
+  componentDidUpdate() {
+    const { automaticallyAddToBagOnSizeChange, selectedSize } = this.props;
+    if (automaticallyAddToBagOnSizeChange && selectedSize) {
+      this.addToBag();
+    }
   }
 
   render() {
-    const { productQuery } = this.props;
-
-    const data = [
-      { value: 's', label: 'S' },
-      { value: 'm', label: 'M - Artículo agotado', disabled: true },
-      { value: 'l', label: 'L' },
-    ];
-
-    if (productQuery.loading) {
-      return (
-        <View style={styles.centeredContainer}>
-          <ActivityIndicator size='large' />
-        </View>
-      );
-    }
+    const { productQuery, sizeModalPickerIsVisible, selectedSize, addingProductToShoppingBag } = this.props;
 
     // Add error handling (wait until this issue is solved: https://github.com/apollographql/apollo-client/issues/2513)
+
+    const compatibleVariantsOmittingSize = fromProductsInfo.computeCompatibleVariants(productQuery.product, this.computeSelectedOptions(), ['size']);
+    const data = fromProductsInfo.generateDataForSizeModalPicker(compatibleVariantsOmittingSize);
 
     return (
       <View style={styles.container}>
@@ -62,23 +53,33 @@ class ProductDetailContainer extends Component {
             </View>
             <View style={styles.priceAndSizeContainer}>
               <View style={styles.priceContainer}>
-                <Text style={styles.priceText}>{fromProductsInfo.getPriceLabel(productQuery.product)}</Text>
+                <Text style={styles.priceText}>{fromProductsInfo.getPriceLabel(productQuery.product.price)}</Text>
               </View>
               <View style={{ flex: 1 }}>
-                <TouchableHighlight
-                  onPress={this.showSizeModalPicker}
-                  style={styles.sizeButtonContainer}
-                >
-                  <View style={styles.sizeButton}>
-                    <View style={{ flex: 1, marginLeft: 8 }}>
-                      <Text style={styles.sizeButtonText}>{this.state.size.toUpperCase()}</Text>
+                {fromProductsInfo.hasUniqueSize(productQuery.product) ?
+                  <View style={styles.sizeButtonContainer}>
+                    <View style={styles.sizeButton}>
+                      <View style={{ flex: 1, marginLeft: 8 }}>
+                        <Text style={styles.uniqueSizeText}>{'TALLA ÚNICA'}</Text>
+                      </View>
                     </View>
-                    <FontAwesome
-                      name='chevron-down'
-                      color={'black'}
-                    />
                   </View>
-                </TouchableHighlight>
+                  :
+                  <TouchableHighlight
+                    onPress={this.showSizeModalPicker}
+                    style={styles.sizeButtonContainer}
+                  >
+                    <View style={styles.sizeButton}>
+                      <View style={{ flex: 1, marginLeft: 8 }}>
+                        <Text style={styles.sizeButtonText}>{fromProductsInfo.getSizeLabel(selectedSize)}</Text>
+                      </View>
+                      <FontAwesome
+                        name='chevron-down'
+                        color={'black'}
+                      />
+                    </View>
+                  </TouchableHighlight>
+                }
               </View>
             </View>
           </View>
@@ -92,13 +93,14 @@ class ProductDetailContainer extends Component {
           />
         </View>
         <ModalPicker
-          isVisible={this.state.sizeModalPickerIsVisible}
+          isVisible={sizeModalPickerIsVisible}
           onBackButtonPress={this.hideSizeModalPicker}
           onBackdropPress={this.hideSizeModalPicker}
           data={data}
-          selectedValue={this.state.size}
+          selectedValue={selectedSize}
           onValueChange={this.onSizeChange}
         />
+        <AddingProductToShoppingBagModal isVisible={addingProductToShoppingBag} />
       </View>
     );
   }
@@ -109,32 +111,79 @@ class ProductDetailContainer extends Component {
   };
 
   showSizeModalPicker = () => {
-    this.setState({ sizeModalPickerIsVisible: true });
+    const { setSizeModalPickerIsVisible } = this.props;
+    setSizeModalPickerIsVisible(true);
   };
 
   hideSizeModalPicker = () => {
-    this.setState({ sizeModalPickerIsVisible: false });
+    const { setSizeModalPickerIsVisible } = this.props;
+    setSizeModalPickerIsVisible(false);
   };
 
   onSizeChange = (size) => {
-    this.setState({ size: size });
+    const { setSelectedSize } = this.props;
+    setSelectedSize(size);
     this.hideSizeModalPicker();
   };
 
-  addToBag = () => {
-    const { productQuery } = this.props;
-    console.log(productQuery.product.id);
+  addToBag = async () => {
+    const {
+      navigation,
+      productQuery,
+      setAutomaticallyAddToBagOnSizeChange,
+      setAddingProductToShoppingBag,
+      addProductToShoppingBag,
+    } = this.props;
+
+    setAutomaticallyAddToBagOnSizeChange(false);
+    const selectedOptions = this.computeSelectedOptions();
+    const compatibleProductVariants = fromProductsInfo.computeCompatibleVariants(productQuery.product, selectedOptions, []);
+
+    // For now we assume we will always have at least 1 compatible product variant
+    if (compatibleProductVariants.length > 1) {
+      const sizeOption = selectedOptions.find((option) => option.name === 'size');
+      if (!sizeOption.value) {
+        setAutomaticallyAddToBagOnSizeChange(true);
+        this.showSizeModalPicker();
+      }
+      return;
+    }
+
+    const productVariant = compatibleProductVariants[0];
+    setAddingProductToShoppingBag(true);
+    const mutationPayload = await runMutation(
+      'addProductToShoppingBag',
+      addProductToShoppingBag,
+      { variables: { productVariantId: productVariant.id } },
+    );
+    setAddingProductToShoppingBag(false);
+    if (mutationPayload.data.addProductToShoppingBag) {
+      navigation.goBack();
+      console.log('Producto añadido a tu bolsa!');
+    } else if (mutationPayload.error.name === 'ShoppingBagLineItemAlreadyExistsError') {
+      console.log('ShoppingBagLineItemAlreadyExistsError');
+    } else {
+      console.log('Lo sentimos. El producto no ha podido ser añadido a tu bolsa.');
+    }
   };
+
+  computeSelectedOptions = () => {
+    const { selectedSize } = this.props;
+    return [{
+      name: 'size',
+      value: selectedSize,
+    }];
+  }
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1
+    flex: 1,
   },
   centeredContainer: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
   topContainer: {
     flex: 1,
@@ -200,6 +249,10 @@ const styles = StyleSheet.create({
   sizeButtonText: {
     fontWeight: 'bold',
   },
+  uniqueSizeText: {
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
   bottomContainer: {
     flexDirection: 'row',
     padding: 16,
@@ -215,18 +268,78 @@ const styles = StyleSheet.create({
 const PRODUCT_QUERY = gql`
   query ProductQuery($id: ID!) {
     product(id: $id) {
-      id,
-      title,
-      price,
-      imagesUrls,
+      id
+      imagesUrls
+      options {
+        name
+        values
+      }
+      price
       shop {
         name
+      }
+      title
+      variants {
+        id
+        availableForSale
+        selectedOptions {
+          name
+          value
+        }
       }
     }
   }
 `;
 
-export default graphql(PRODUCT_QUERY, {
-  name: 'productQuery',
-  options: ({ productId }) => ({ variables: { id: productId } }),
-})(ProductDetailContainer);
+const ADD_PRODUCT_TO_SHOPPING_BAG_MUTATION = gql`
+  mutation AddProductToShoppingBagMutation($productVariantId: ID!) {
+    addProductToShoppingBag(productVariantId: $productVariantId) {
+      id
+      lineItems {
+        id
+        quantity
+        variant {
+          id
+          product {
+            imagesUrls
+            price
+            shop {
+              name
+            }
+            title
+          }
+          selectedOptions {
+            name
+            value
+          }
+        }
+      }
+    }
+  }
+`;
+
+const Loading = () => (
+  <View style={styles.centeredContainer}>
+    <ActivityIndicator size='large' />
+  </View>
+);
+
+const renderWhileLoading = (component, propName = 'data') =>
+  branch(
+    props => props[propName] && props[propName].loading,
+    renderComponent(component),
+  )
+;
+
+export default compose(
+  graphql(PRODUCT_QUERY, {
+    name: 'productQuery',
+    options: ({ productId }) => ({ variables: { id: productId } }),
+  }),
+  renderWhileLoading(Loading, 'productQuery'),
+  graphql(ADD_PRODUCT_TO_SHOPPING_BAG_MUTATION, { name: 'addProductToShoppingBag' }),
+  withState('sizeModalPickerIsVisible', 'setSizeModalPickerIsVisible', false),
+  withState('selectedSize', 'setSelectedSize', ({ productQuery }) => fromProductsInfo.getDefaultSize(productQuery.product)),
+  withState('automaticallyAddToBagOnSizeChange', 'setAutomaticallyAddToBagOnSizeChange', false),
+  withState('addingProductToShoppingBag', 'setAddingProductToShoppingBag', false),
+)(ProductDetailContainer);

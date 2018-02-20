@@ -23,7 +23,7 @@ class ProductThumbnail extends Component {
             resizeMode='cover'
           />
           <View style={styles.priceContainer}>
-            <Text style={styles.price}>{fromProductsInfo.getPriceLabel(product)}</Text>
+            <Text style={styles.price}>{fromProductsInfo.getPriceLabel(product.price)}</Text>
           </View>
           <Text numberOfLines={1}>{product.shop.name}</Text>
         </View>
