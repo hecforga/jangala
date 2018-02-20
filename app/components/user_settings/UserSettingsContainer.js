@@ -50,7 +50,7 @@ class UserSettingsContainer extends Component {
         />
         <MyButton
           title='Cerrar sesión'
-          onPress={() => logOut();}
+          onPress={() => logOut()}
           buttonStyle={{ minWidth: moderateScale(50), height: moderateScale(30)}}
         />
       </View>
