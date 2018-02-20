@@ -2,10 +2,22 @@ import React, { Component } from 'react';
 import { Platform, StyleSheet, Text, View } from 'react-native';
 import { Constants } from 'expo';
 
+import MyButton from '../common/MyButton.js';
+
 class HomeScreen extends Component {
-  static navigationOptions = {
-    header: null
-  };
+  static navigationOptions = ({ navigation }) => ({
+    title: 'Hombre', // TODO: switch gender
+    headerRight: (
+      <MyButton
+        title='Ajustes'
+        onPress={() => {
+          navigation.navigate('UserSettings');
+        }}
+        buttonStyle={{ minWidth: 80 }}
+        containerStyle={{ marginRight: 8 }}
+      />
+    ),
+  });
 
   render() {
     const { navigation } = this.props;
