@@ -1,5 +1,6 @@
 import React, { PropTypes, Component } from 'react';
 import { BackHandler, Platform, StyleSheet } from 'react-native';
+import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { addNavigationHelpers, NavigationActions, StackNavigator, TabNavigator, TabBarTop, TabBarBottom } from 'react-navigation';
 import { FontAwesome } from '@expo/vector-icons';
@@ -203,16 +204,16 @@ class AppWithNavigationState extends Component {
   };
 
   render() {
-    const { dispatch, nav1, nav2, checkedLoggedIn, token } = this.props;
+    const { dispatch, loggedOutNav, loggedInNav, checkedLoggedIn, token } = this.props;
 
-    if(!checkedLoggedIn){
+    if (!checkedLoggedIn){
       return null;
     }
 
-    if(!token){
+    if (!token) {
       return <LoggedOutAppNavigator navigation={addNavigationHelpers({ dispatch, state: loggedOutNav })} />
     }
-    else{
+    else {
       return <LoggedInAppNavigator navigation={addNavigationHelpers({ dispatch, state: loggedInNav })} />
     }
   }
@@ -225,4 +226,9 @@ const mapStateToProps = state => ({
   token: getToken(state),
 });
 
-export default connect(mapStateToProps, actions)(AppWithNavigationState);
+const mapDispatchToProps = (dispatch) => ({
+  dispatch,
+  ...bindActionCreators(actions, dispatch),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(AppWithNavigationState);
