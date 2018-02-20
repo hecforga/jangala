@@ -10,10 +10,9 @@ class LogInScreen extends Component {
   };
 
   render() {
-    const { navigation } = this.props;
 
     return (
-      <LogInContainer/>
+      <LogInContainer />
     );
   }
 }

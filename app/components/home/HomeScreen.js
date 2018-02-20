@@ -2,10 +2,9 @@ import React, { Component } from 'react';
 import { Platform, StyleSheet, Text, View } from 'react-native';
 import { Constants } from 'expo';
 
+import MyButton from '../common/MyButton.js';
+
 class HomeScreen extends Component {
-  static navigationOptions = {
-    header: null
-  };
 
   render() {
     const { navigation } = this.props;
@@ -17,6 +16,20 @@ class HomeScreen extends Component {
     );
   }
 }
+
+HomeScreen.navigationOptions = ({ navigation }) => ({
+  title: 'Hombre',
+  headerRight: (
+    <MyButton
+      title='Ajustes'
+      onPress={() => {
+        navigation.navigate('UserSettings');
+      }}
+      buttonStyle={{ minWidth: 80 }}
+      containerStyle={{ marginRight: 8 }}
+    />
+  ),
+});
 
 const styles = StyleSheet.create({
   container: {
