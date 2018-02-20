@@ -5,6 +5,9 @@ import { addNavigationHelpers, NavigationActions, StackNavigator, TabNavigator, 
 import { FontAwesome } from '@expo/vector-icons';
 import { Constants } from 'expo';
 
+import { getCheckedLoggedIn, getToken } from '../reducers';
+import * as actions from '../actions/index';
+
 import tabs, { getInitialTabName, getTabNameForCatalogueScreen, getTabNameForHomeScreen, getTabNameForShoppingBagScreen } from '../utilities/tabsInfo.js';
 
 import ShopsListScreen from '../components/catalogue/ShopsListScreen.js';
@@ -15,6 +18,7 @@ import ShopProfileScreen from '../components/shop_profile/ShopProfileScreen.js';
 import CategoryScreen from '../components/category/CategoryScreen.js';
 import FiltersScreen from '../components/filters/FiltersScreen.js';
 import ProductDetailScreen from '../components/product_detail/ProductDetailScreen.js';
+import LogInScreen from '../components/log_in/LogInScreen.js';
 
 const CatalogueTabs = TabNavigator({
   ShopsList: {
@@ -108,7 +112,7 @@ if (Platform.OS === 'ios') {
   };
 }
 
-export const AppNavigator = TabNavigator({
+export const LoggedInAppNavigator = TabNavigator({
   [getTabNameForCatalogueScreen()]: {
     screen: CatalogueNavigator,
     navigationOptions: {
@@ -162,8 +166,24 @@ export const AppNavigator = TabNavigator({
   }
 });
 
+export const LoggedOutAppNavigator = StackNavigator({
+  LogIn: { screen: LogInScreen }
+}, {
+  navigationOptions: {
+    title: 'Log In'
+  },
+  cardStyle:{
+    backgroundColor:'white'
+  },
+});
+
 
 class AppWithNavigationState extends Component {
+  componentWillMount() {
+    const { checkLoggedIn, logOut } = this.props;
+    logOut();
+    checkLoggedIn();
+  }
   componentDidMount() {
     BackHandler.addEventListener("hardwareBackPress", () => this.onBackPress());
   }
@@ -183,14 +203,26 @@ class AppWithNavigationState extends Component {
   };
 
   render() {
-    const { dispatch, nav } = this.props;
+    const { dispatch, nav1, nav2, checkedLoggedIn, token } = this.props;
 
-    return <AppNavigator navigation={addNavigationHelpers({ dispatch, state: nav })} />
+    if(!checkedLoggedIn){
+      return null;
+    }
+
+    if(!token){
+      return <LoggedOutAppNavigator navigation={addNavigationHelpers({ dispatch, state: loggedOutNav })} />
+    }
+    else{
+      return <LoggedInAppNavigator navigation={addNavigationHelpers({ dispatch, state: loggedInNav })} />
+    }
   }
 }
 
 const mapStateToProps = state => ({
-  nav: state.nav,
+  loggedInNav: state.loggedInNav,
+  loggedOutNav: state.loggedOutNav,
+  checkedLoggedIn: getCheckedLoggedIn(state),
+  token: getToken(state),
 });
 
-export default connect(mapStateToProps)(AppWithNavigationState);
+export default connect(mapStateToProps, actions)(AppWithNavigationState);

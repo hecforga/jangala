@@ -2,7 +2,8 @@ import { createStore, combineReducers, applyMiddleware } from 'redux';
 import { createLogger } from 'redux-logger';
 import thunk from 'redux-thunk';
 
-import nav from './reducers/navigation.js';
+import { loggedInNav, loggedOutNav } from './reducers/navigation.js';
+import logIn from './reducers/logIn.js';
 
 const configureStore = () => {
 
@@ -13,7 +14,9 @@ const configureStore = () => {
 
   return createStore(
     combineReducers({
-      nav
+      loggedInNav,
+      loggedOutNav,
+      logIn,
     }),
     applyMiddleware(...middlewares)
   );

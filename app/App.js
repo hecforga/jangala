@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { ApolloClient, HttpLink, ApolloLink, InMemoryCache } from 'apollo-client-preset';
 
-import { AUTH_TOKEN } from './constants.js';
 import configureStore from './configureStore.js';
+import token from './constants.js';
 
 import Root from './components/Root.js';
 
@@ -13,7 +13,6 @@ export default class App extends Component {
     const httpLink = new HttpLink({ uri: 'https://jangala.herokuapp.com' });
 
     const middlewareAuthLink = new ApolloLink((operation, forward) => {
-      const token = AUTH_TOKEN; // TODO: use asyncStorage
       const authorizationHeader = token ? `Bearer ${token}` : null;
       operation.setContext({
         headers: {
@@ -31,6 +30,7 @@ export default class App extends Component {
     });
 
     this.store = configureStore();
+
   }
 
   render() {
