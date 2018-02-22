@@ -73,6 +73,7 @@ const styles = StyleSheet.create({
   },
   sloganContainer: {
     flex: 0.085,
+    backgroundColor: 'transparent',
     justifyContent: 'center',
     alignItems: 'center',
   },

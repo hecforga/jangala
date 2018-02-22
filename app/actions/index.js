@@ -1,25 +1,35 @@
 import { AsyncStorage } from "react-native";
-import { AUTH_TOKEN_KEY } from '../constants.js';
+import { AUTH_TOKEN_KEY, token } from '../constants.js';
 
-export const checkLoggedIn = () => (dispatch, getState) => {
+export const checkLogin = () => (dispatch, getState) => {
+  dispatch({
+    type: 'CHECK_LOGIN_REQUEST',
+  });
   AsyncStorage.getItem(AUTH_TOKEN_KEY).then((token) => {
     dispatch({
-      type: 'CHECK_LOGGED_IN',
-      token: token,
+      type: 'CHECK_LOGIN_SUCCESS',
+      loggedIn: !!token,
     });
-  }).catch(
-    error => console.log('error in check token action')
-  );
+  }).catch(error => {
+    console.log(error);
+    dispatch({
+      type: 'CHECK_LOGIN_FAILURE',
+    });
+  });
 };
 
-export const logIn = (token) => (dispatch, getState) => {
+export const logIn = () => (dispatch, getState) => {
   dispatch({
     type: 'LOG_IN_REQUEST',
   });
+  if (!token) {
+    dispatch({
+      type: 'LOG_IN_FAILURE',
+    });
+  }
   AsyncStorage.setItem(AUTH_TOKEN_KEY, token).then(() => {
     dispatch({
       type: 'LOG_IN_SUCCESS',
-      token: token,
     });
   }).catch(error => {
     console.log(error);

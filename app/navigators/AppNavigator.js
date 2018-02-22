@@ -6,7 +6,7 @@ import { addNavigationHelpers, NavigationActions, StackNavigator, TabNavigator, 
 import { FontAwesome } from '@expo/vector-icons';
 import { Constants } from 'expo';
 
-import { getCheckedLoggedIn, getToken } from '../reducers';
+import { isLoginChecking, isLoggedIn } from '../reducers';
 import * as actions from '../actions/index';
 import tabs, { getInitialTabName, getTabNameForCatalogueScreen, getTabNameForHomeScreen, getTabNameForShoppingBagScreen } from '../utilities/tabsInfo.js';
 
@@ -186,8 +186,8 @@ export const LoggedOutAppNavigator = StackNavigator({
 
 class AppWithNavigationState extends Component {
   componentWillMount() {
-    const { checkLoggedIn } = this.props;
-    checkLoggedIn();
+    const { checkLogin } = this.props;
+    checkLogin();
   }
 
   componentDidMount() {
@@ -231,16 +231,16 @@ class AppWithNavigationState extends Component {
   };
 
   render() {
-    const { dispatch, loggedInNav, loggedOutNav, checkedLoggedIn, token } = this.props;
+    const { dispatch, loggedInNav, loggedOutNav, isLoginChecking, isLoggedIn } = this.props;
 
-    if (!checkedLoggedIn) {
+    if (isLoginChecking) {
       return null;
     }
 
-    if (!token) {
-      return <LoggedOutAppNavigator navigation={addNavigationHelpers({ dispatch, state: loggedOutNav })} />
+    if (isLoggedIn) {
+      return <LoggedInAppNavigator navigation={addNavigationHelpers({ dispatch, state: loggedInNav })} />;
     } else {
-      return <LoggedInAppNavigator navigation={addNavigationHelpers({ dispatch, state: loggedInNav })} />
+      return <LoggedOutAppNavigator navigation={addNavigationHelpers({ dispatch, state: loggedOutNav })} />;
     }
   }
 }
@@ -248,8 +248,8 @@ class AppWithNavigationState extends Component {
 const mapStateToProps = state => ({
   loggedInNav: state.loggedInNav,
   loggedOutNav: state.loggedOutNav,
-  checkedLoggedIn: getCheckedLoggedIn(state),
-  token: getToken(state),
+  isLoginChecking: isLoginChecking(state),
+  isLoggedIn: isLoggedIn(state),
 });
 
 const mapDispatchToProps = (dispatch) => ({
